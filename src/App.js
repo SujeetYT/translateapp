@@ -16,19 +16,11 @@ function App() {
     try {
       setLoad(true);
       setMessage("Translating...");
-      const params = new URLSearchParams();
-      params.append("q", input);
-      params.append("source", from);
-      params.append("target", to);
-      params.append("api_key", 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx');
+
+      const apiURL = `https://api.mymemory.translated.net/get?q=${input}&langpair=${from}|${to}`;
       
-      const res = await axios.post("https://libretranslate.de/translate", params, {
-        Headers : {
-          'accept' : 'application/json',
-          'Content-Type' : 'application/x-www-form-urlencoded'
-        }
-      })
-      setOutput(res.data.translatedText);
+      const res = await axios.get(apiURL);
+      setOutput(res.data.responseData.translatedText);
       setLoad(false);
 
     } catch (error) {
@@ -40,14 +32,11 @@ function App() {
   useEffect(()=>{
     axios.get('https://libretranslate.de/languages', 
     {Headers:{'accept' : 'application/json'}}).then(res => {
-      // console.log(res.data);
       setOptions(res.data)
       setLoad(false);
     })
   }, [])
 
-
-  // curl -X GET 'https://libretranslate.de/languages' -H 'accept: application/json'
 
   return (
     <>
@@ -70,10 +59,10 @@ function App() {
         <div className='mainArea'>
           <div>
             {/* Input text area */}
-            <textarea onInput={e => setInput(e.target.value)}></textarea>
+            <textarea onInput={e => setInput(e.target.value)} ></textarea>
           
             {/* Output text area */}
-            <textarea defaultValue={output}></textarea>
+            <textarea defaultValue={output} placeholder="Translation"></textarea>
           </div>
 
           {/* Translate button */}
